@@ -32,31 +32,37 @@ function Chart() {
           labels: homeValuationData.map(obj => obj.month),
           datasets: [
             {
-              label: 'Range of estimate',
               data: homeValuationData.map(obj => obj.valuationHigh),
               backgroundColor: ['rgba(63, 131, 165, 0.075)'],
               fill: '+1',
               borderColor: ['rgba(63, 131, 165, 1)'],
               borderWidth: 1,
               lineTension: 0,
-              borderDash: [1, 3]
+              borderDash: [1, 3],
+              pointHoverRadius: 0,
+              pointRadius: 0
             },
             {
               label: 'Average estimate',
               data: homeValuationData.map(obj => obj.valuation),
               borderColor: ['rgba(63, 131, 165, 1)'],
+              fill: false,
               borderWidth: 2,
               lineTension: 0,
-              fill: false
+              // pointHoverRadius: 0,
+              pointRadius: 2
             },
             {
+              label: 'Range of estimate',
               data: homeValuationData.map(obj => obj.valuationLow),
               backgroundColor: ['rgba(63, 131, 165, 0.075)'],
               fill: '-1',
               borderColor: ['rgba(63, 131, 165, 1)'],
               borderWidth: 1,
               lineTension: 0,
-              borderDash: [1, 3]
+              borderDash: [1, 3],
+              pointHoverRadius: 0,
+              pointRadius: 0
             }
           ]
         },
@@ -80,7 +86,7 @@ function Chart() {
       {homeValuationData.length === 0 ? (
         <Loader />
       ) : (
-        <canvas ref={canvasRef} id='myChart' width='800' height='400'></canvas>
+        <canvas ref={canvasRef} id='myChart' width='675' height='315'></canvas>
       )}
     </div>
   );
