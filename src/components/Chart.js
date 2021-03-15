@@ -35,11 +35,11 @@ function Chart() {
               label: 'Range of estimate',
               data: homeValuationData.map(obj => obj.valuationHigh),
               backgroundColor: ['rgba(63, 131, 165, 0.075)'],
+              fill: '+1',
               borderColor: ['rgba(63, 131, 165, 1)'],
               borderWidth: 1,
               lineTension: 0,
-              borderDash: [1, 3],
-              fill: '+1'
+              borderDash: [1, 3]
             },
             {
               label: 'Average estimate',
@@ -52,11 +52,11 @@ function Chart() {
             {
               data: homeValuationData.map(obj => obj.valuationLow),
               backgroundColor: ['rgba(63, 131, 165, 0.075)'],
+              fill: '-1',
               borderColor: ['rgba(63, 131, 165, 1)'],
               borderWidth: 1,
               lineTension: 0,
-              borderDash: [1, 3],
-              fill: '-1'
+              borderDash: [1, 3]
             }
           ]
         },
