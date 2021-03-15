@@ -27,30 +27,36 @@ function Chart() {
     if (homeValuationData.length) {
       const ctx = canvasRef.current.getContext('2d');
       new ChartJS(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-          labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          labels: homeValuationData.map(obj => obj.month),
           datasets: [
             {
-              label: '# of Votes',
-              data: [12, 19, 3, 5, 2, 3],
-              backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-              ],
-              borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-              ],
-              borderWidth: 1
+              label: 'Range of estimate',
+              data: homeValuationData.map(obj => obj.valuationHigh),
+              backgroundColor: ['rgba(63, 131, 165, 0.075)'],
+              borderColor: ['rgba(63, 131, 165, 1)'],
+              borderWidth: 1,
+              lineTension: 0,
+              borderDash: [1, 3],
+              fill: '+1'
+            },
+            {
+              label: 'Average estimate',
+              data: homeValuationData.map(obj => obj.valuation),
+              borderColor: ['rgba(63, 131, 165, 1)'],
+              borderWidth: 2,
+              lineTension: 0,
+              fill: false
+            },
+            {
+              data: homeValuationData.map(obj => obj.valuationLow),
+              backgroundColor: ['rgba(63, 131, 165, 0.075)'],
+              borderColor: ['rgba(63, 131, 165, 1)'],
+              borderWidth: 1,
+              lineTension: 0,
+              borderDash: [1, 3],
+              fill: '-1'
             }
           ]
         },
@@ -74,7 +80,7 @@ function Chart() {
       {homeValuationData.length === 0 ? (
         <Loader />
       ) : (
-        <canvas ref={canvasRef} id='myChart' width='400' height='400'></canvas>
+        <canvas ref={canvasRef} id='myChart' width='800' height='400'></canvas>
       )}
     </div>
   );

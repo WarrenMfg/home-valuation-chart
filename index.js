@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 5500;
 
-const homeValuationData = require('./homeValuationData.json');
+const homeValuationData = require('./homeValuationData');
 
 if (process.env.NODE_ENV !== 'production') {
   const morgan = require('morgan');
