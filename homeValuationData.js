@@ -5,10 +5,10 @@ const valuations = new Array(12)
   .map(() => faker.random.number({ min: 450000, max: 600000 })); // { min: 1900000, max: 2250000 }
 const valuationDiff = 40000;
 const months = [
+  'Jan 2021',
   'Feb 2021',
   'Mar 2021',
   'Apr 2021',
-  'Jan 2021',
   'May 2021',
   'Jun 2021',
   'Jul 2021',

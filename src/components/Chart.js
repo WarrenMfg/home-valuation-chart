@@ -39,17 +39,11 @@ function Chart({ homeValuationData }) {
       new ChartJS(ctx, {
         type: 'line',
         data: {
-          labels: [''].concat(
-            homeValuationData.map(obj => obj.month),
-            ['']
-          ),
+          labels: homeValuationData.map(obj => obj.month).concat(['']),
           datasets: [
             // top dashed line
             {
-              data: [{}].concat(
-                homeValuationData.map(obj => obj.valuationHigh),
-                [{}]
-              ),
+              data: homeValuationData.map(obj => obj.valuationHigh),
               backgroundColor: 'rgba(63, 131, 165, 0.075)',
               fill: '+1',
               lineTension: 0,
@@ -62,10 +56,7 @@ function Chart({ homeValuationData }) {
             },
             // solid line
             {
-              data: [{}].concat(
-                homeValuationData.map(obj => obj.valuation),
-                [{}]
-              ),
+              data: homeValuationData.map(obj => obj.valuation),
               fill: false,
               lineTension: 0,
               borderColor: 'rgba(63, 131, 165, 1)',
@@ -82,10 +73,7 @@ function Chart({ homeValuationData }) {
             },
             // bottom dashed line
             {
-              data: [{}].concat(
-                homeValuationData.map(obj => obj.valuationLow),
-                [{}]
-              ),
+              data: homeValuationData.map(obj => obj.valuationLow),
               backgroundColor: 'rgba(63, 131, 165, 0.075)',
               fill: '-1',
               borderColor: 'rgba(63, 131, 165, 1)',
@@ -101,8 +89,8 @@ function Chart({ homeValuationData }) {
         options: {
           layout: {
             padding: {
-              top: 30
-              // right: 10
+              top: 20,
+              right: 15
             }
           },
           legend: {
@@ -111,19 +99,22 @@ function Chart({ homeValuationData }) {
           scales: {
             xAxes: [
               {
+                offset: true,
                 gridLines: {
-                  // color: 'rgb(0,0,0)',
                   display: false,
                   drawBorder: false,
                   zeroLineWidth: 0
-                  // zeroLineColor: 'rgba(0, 0, 0, 0.1)'
                 },
                 ticks: {
                   display: true,
                   maxTicksLimit: 4,
-                  padding: 8,
                   maxRotation: 0,
-                  minRotation: 0
+                  minRotation: 0,
+                  fontSize: 16,
+                  padding: 8,
+                  fontColor: 'rgb(37, 40, 42)',
+                  fontFamily:
+                    "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif"
                 }
               }
             ],
@@ -140,6 +131,11 @@ function Chart({ homeValuationData }) {
                   maxTicksLimit: 5,
                   mirror: true,
                   labelOffset: -10,
+                  // padding: 10,
+                  fontSize: 14,
+                  fontColor: 'rgb(37, 40, 42)',
+                  fontFamily:
+                    "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
                   callback: function (value) {
                     if (value < 99) {
                       return '$0';
@@ -197,7 +193,7 @@ function Chart({ homeValuationData }) {
               // Set Text
               if (tooltipModel.body) {
                 const target =
-                  homeValuationData[tooltipModel.dataPoints[0].index - 1]; // minus 1 because of dataset concatenation
+                  homeValuationData[tooltipModel.dataPoints[0].index];
 
                 let innerHtml = `
                   <p class='font-bold text-base text-center mb-3'>${formatValuation(
