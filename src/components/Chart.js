@@ -20,6 +20,7 @@ function Chart({ homeValuationData }) {
   const canvasRef = useRef(null);
   const [estimate, setEstimate] = useState('Not enough data yet.');
 
+  // TODO: move this to custom hook
   // create chart and update estimate
   useEffect(() => {
     // update estimate TODO: business logic--> if estimate is negative, still show this info? Same color?
@@ -38,11 +39,17 @@ function Chart({ homeValuationData }) {
       new ChartJS(ctx, {
         type: 'line',
         data: {
-          labels: homeValuationData.map(obj => obj.month),
+          labels: [''].concat(
+            homeValuationData.map(obj => obj.month),
+            ['']
+          ),
           datasets: [
             // top dashed line
             {
-              data: homeValuationData.map(obj => obj.valuationHigh),
+              data: [{}].concat(
+                homeValuationData.map(obj => obj.valuationHigh),
+                [{}]
+              ),
               backgroundColor: 'rgba(63, 131, 165, 0.075)',
               fill: '+1',
               lineTension: 0,
@@ -55,13 +62,15 @@ function Chart({ homeValuationData }) {
             },
             // solid line
             {
-              data: homeValuationData.map(obj => obj.valuation),
+              data: [{}].concat(
+                homeValuationData.map(obj => obj.valuation),
+                [{}]
+              ),
               fill: false,
               lineTension: 0,
               borderColor: 'rgba(63, 131, 165, 1)',
               borderWidth: 2,
               borderCapStyle: 'round',
-              // point stuff
               pointRadius: 7,
               pointHitRadius: 4,
               pointBackgroundColor: 'rgba(255, 255, 255, 0)',
@@ -73,7 +82,10 @@ function Chart({ homeValuationData }) {
             },
             // bottom dashed line
             {
-              data: homeValuationData.map(obj => obj.valuationLow),
+              data: [{}].concat(
+                homeValuationData.map(obj => obj.valuationLow),
+                [{}]
+              ),
               backgroundColor: 'rgba(63, 131, 165, 0.075)',
               fill: '-1',
               borderColor: 'rgba(63, 131, 165, 1)',
@@ -89,7 +101,8 @@ function Chart({ homeValuationData }) {
         options: {
           layout: {
             padding: {
-              right: 10
+              top: 30
+              // right: 10
             }
           },
           legend: {
@@ -100,16 +113,17 @@ function Chart({ homeValuationData }) {
               {
                 gridLines: {
                   // color: 'rgb(0,0,0)',
-                  // drawTicks: false,
-                  // display: false,
+                  display: false,
                   drawBorder: false,
-                  // zeroLineWidth: 0,
-                  zeroLineColor: 'rgba(0, 0, 0, 0.1)'
+                  zeroLineWidth: 0
+                  // zeroLineColor: 'rgba(0, 0, 0, 0.1)'
                 },
                 ticks: {
-                  // display: true,
-                  maxTicksLimit: 3,
-                  padding: 10
+                  display: true,
+                  maxTicksLimit: 4,
+                  padding: 8,
+                  maxRotation: 0,
+                  minRotation: 0
                 }
               }
             ],
@@ -117,12 +131,27 @@ function Chart({ homeValuationData }) {
               {
                 position: 'right',
                 gridLines: {
+                  drawBorder: false,
                   drawTicks: false,
                   zeroLineColor: 'rgba(0, 0, 0, 0.1)'
                 },
                 ticks: {
-                  beginAtZero: true,
-                  padding: 10
+                  suggestedMin: homeValuationData[0].valuation / 3,
+                  maxTicksLimit: 5,
+                  mirror: true,
+                  labelOffset: -10,
+                  callback: function (value, index, values) {
+                    console.log(value, index, values);
+                    if (value < 99) {
+                      return '$0';
+                    } else if (value < 999) {
+                      return '$100';
+                    } else if (value < 1_000_000) {
+                      return `$${value / 1000}K`;
+                    } else {
+                      return `$${value / 1_000_000}M`;
+                    }
+                  }
                 }
               }
             ]
@@ -169,7 +198,7 @@ function Chart({ homeValuationData }) {
               // Set Text
               if (tooltipModel.body) {
                 const target =
-                  homeValuationData[tooltipModel.dataPoints[0].index];
+                  homeValuationData[tooltipModel.dataPoints[0].index - 1]; // minus 1 because of dataset concatenation
 
                 let innerHtml = `
                   <p class='font-bold text-base text-center mb-3'>${formatValuation(
