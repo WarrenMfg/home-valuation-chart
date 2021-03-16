@@ -140,8 +140,7 @@ function Chart({ homeValuationData }) {
                   maxTicksLimit: 5,
                   mirror: true,
                   labelOffset: -10,
-                  callback: function (value, index, values) {
-                    console.log(value, index, values);
+                  callback: function (value) {
                     if (value < 99) {
                       return '$0';
                     } else if (value < 999) {
