@@ -2,21 +2,21 @@ const faker = require('faker');
 
 const valuations = new Array(12)
   .fill(null)
-  .map(() => faker.random.number({ min: 450000, max: 600000 }));
+  .map(() => faker.random.number({ min: 450000, max: 600000 })); // { min: 1900000, max: 2250000 }
 const valuationDiff = 40000;
 const months = [
-  'Jan 2020',
-  'Feb 2020',
-  'Mar 2020',
-  'Apr 2020',
-  'May 2020',
-  'Jun 2020',
-  'Jul 2020',
-  'Aug 2020',
-  'Sep 2020',
-  'Oct 2020',
-  'Nov 2020',
-  'Dec 2020'
+  'Feb 2021',
+  'Mar 2021',
+  'Apr 2021',
+  'Jan 2021',
+  'May 2021',
+  'Jun 2021',
+  'Jul 2021',
+  'Aug 2021',
+  'Sep 2021',
+  'Oct 2021',
+  'Nov 2021',
+  'Dec 2021'
 ];
 
 module.exports = {
