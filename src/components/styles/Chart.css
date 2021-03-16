@@ -1,0 +1,9 @@
+@import './index.css';
+
+.header-icon {
+  background-color: var(--blue__dimmed);
+}
+
+.estimate {
+  color: var(--teal);
+}

@@ -1,29 +1,30 @@
 /* eslint-disable no-console */
 
 import React, { useRef, useEffect, useState } from 'react';
-import { handleErrors } from '../utils';
-
+import PropTypes from 'prop-types';
 import ChartJS from 'chart.js';
-import Loader from './Loader';
 
-function Chart() {
+import { formatValuation } from '../utils';
+
+import './styles/Chart.css';
+
+function Chart({ homeValuationData }) {
   const canvasRef = useRef(null);
-  const [homeValuationData, setHomeValuationData] = useState([]);
+  const [estimate, setEstimate] = useState('Not enough data yet.');
 
+  // create chart and update estimate
   useEffect(() => {
-    const fetchHomeValuationData = async () => {
-      try {
-        const response = await fetch('/api/home-valuation-data');
-        const { data } = await handleErrors(response);
-        setHomeValuationData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    setTimeout(fetchHomeValuationData, 1000);
-  }, []);
+    // update estimate TODO: business logic--> if estimate is negative, still show this info? Same color?
+    if (homeValuationData.length >= 2) {
+      const last2Months = homeValuationData.slice(-2);
+      const currentMonth = last2Months[1].valuation;
+      const lastMonth = last2Months[0].valuation;
+      const diff = currentMonth - lastMonth;
+      const percentDiff = Math.round((diff / currentMonth) * 100);
+      setEstimate(`${formatValuation(diff)} (${percentDiff}%)`);
+    }
 
-  useEffect(() => {
+    // create chart TODO: what is minimum data length needed to render chart and still look good?
     if (homeValuationData.length) {
       const ctx = canvasRef.current.getContext('2d');
       new ChartJS(ctx, {
@@ -89,14 +90,34 @@ function Chart() {
   }, [homeValuationData]);
 
   return (
-    <div className='my-4 w-3/4'>
-      {homeValuationData.length === 0 ? (
-        <Loader />
-      ) : (
-        <canvas ref={canvasRef} id='myChart' width='675' height='315'></canvas>
-      )}
+    <div>
+      <header className='flex items-center mb-4'>
+        <div className='flex justify-center items-center mr-4 rounded-full w-14 h-14 header-icon'>
+          <i className='fas fa-history text-xl'></i>
+        </div>
+        <h1 className='text-lg font-bold'>History</h1>
+      </header>
+      <p className='mb-4'>
+        Your home value estimate in the last 30 days:{' '}
+        <span className='estimate font-bold'>{estimate}</span>
+      </p>
+      <div
+        className='chart-container'
+        style={{
+          position: 'relative',
+          height: '40vh',
+          width: '80vw',
+          maxWidth: '625px'
+        }}
+      >
+        <canvas ref={canvasRef} id='myChart'></canvas>
+      </div>
     </div>
   );
 }
+
+Chart.propTypes = {
+  homeValuationData: PropTypes.array.isRequired
+};
 
 export default Chart;
