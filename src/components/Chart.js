@@ -23,14 +23,21 @@ function Chart({ homeValuationData }) {
   // TODO: move this to custom hook
   // create chart and update estimate
   useEffect(() => {
-    // update estimate TODO: business logic--> if estimate is negative, still show this info? Same color?
+    // update estimate
+    // TODO: business logic--> if estimate is negative, still show this info? Same color?
     if (homeValuationData.length >= 2) {
       const last2Months = homeValuationData.slice(-2);
       const currentMonth = last2Months[1].valuation;
       const lastMonth = last2Months[0].valuation;
       const diff = currentMonth - lastMonth;
       const percentDiff = Math.round((diff / currentMonth) * 100);
-      setEstimate(`${formatValuation(diff, true)} (${percentDiff}%)`);
+      setEstimate(
+        `${formatValuation({
+          data: diff,
+          withSign: true,
+          roundToNearestThousand: false
+        })} (${percentDiff}%)`
+      );
     }
 
     // create chart TODO: what is minimum data length needed to render chart and still look good?
@@ -87,14 +94,14 @@ function Chart({ homeValuationData }) {
           ]
         },
         options: {
+          legend: {
+            display: false
+          },
           layout: {
             padding: {
               top: 20,
               right: 15
             }
-          },
-          legend: {
-            display: false
           },
           scales: {
             xAxes: [
@@ -106,7 +113,6 @@ function Chart({ homeValuationData }) {
                   zeroLineWidth: 0
                 },
                 ticks: {
-                  display: true,
                   maxTicksLimit: 4,
                   maxRotation: 0,
                   minRotation: 0,
@@ -131,15 +137,14 @@ function Chart({ homeValuationData }) {
                   maxTicksLimit: 5,
                   mirror: true,
                   labelOffset: -10,
-                  // padding: 10,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontColor: 'rgb(37, 40, 42)',
                   fontFamily:
                     "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
                   callback: function (value) {
-                    if (value < 99) {
+                    if (value < 100) {
                       return '$0';
-                    } else if (value < 999) {
+                    } else if (value < 1000) {
                       return '$100';
                     } else if (value < 1_000_000) {
                       return `$${value / 1000}K`;
@@ -197,26 +202,31 @@ function Chart({ homeValuationData }) {
 
                 let innerHtml = `
                   <p class='font-bold text-base text-center mb-3'>${formatValuation(
-                    target.valuation,
-                    false
+                    {
+                      data: target.valuation,
+                      withSign: false,
+                      roundToNearestThousand: true
+                    }
                   )}</p>
                   <div class='flex justify-center items-center mb-1'>
                     <div class='flex justify-center items-center w-5 h-5 mr-2 rounded-full' style='background-color: rgba(66, 168, 160, 0.075);'>
                       <i class='fas fa-caret-up text-lg' style='color: rgb(66, 168, 160);'></i>
                     </div>
-                    <p class='text-base'>${formatValuation(
-                      target.valuationHigh,
-                      false
-                    )}</p>
+                    <p class='text-base'>${formatValuation({
+                      data: target.valuationHigh,
+                      withSign: false,
+                      roundToNearestThousand: true
+                    })}</p>
                   </div>
                   <div class='flex justify-center items-center'>
                     <div class='flex justify-center items-center w-5 h-5 mr-2 rounded-full' style='background-color: rgba(201, 42, 82, 0.075);'>
                       <i class='fas fa-caret-down text-lg' style='color: rgb(201, 42, 82);'></i>
                     </div>
-                    <p class='text-base'>${formatValuation(
-                      target.valuationLow,
-                      false
-                    )}</p>
+                    <p class='text-base'>${formatValuation({
+                      data: target.valuationLow,
+                      withSign: false,
+                      roundToNearestThousand: true
+                    })}</p>
                   </div>`;
 
                 const customTooltip = tooltipEl.querySelector(

@@ -6,14 +6,20 @@ export const handleErrors = async res => {
   }
 };
 
-export const formatValuation = (data, withSign) => {
+export const formatValuation = ({ data, withSign, roundToNearestThousand }) => {
   let sign = '';
 
   if (withSign) {
     sign = data < 0 ? '' : '+'; // browser compatibility hack: .toLocaleString() will add negative sign
   }
 
-  const rounded = Math.round(data); // NOTE: -1000.5 rounds to -1000
+  let rounded;
+
+  if (roundToNearestThousand) {
+    rounded = Math.round(data / 1000) * 1000;
+  } else {
+    rounded = Math.round(data); // NOTE: -1000.5 rounds to -1000
+  }
 
   return (
     sign +
