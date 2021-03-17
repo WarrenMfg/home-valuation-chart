@@ -18,12 +18,16 @@ ChartJS.defaults.global.hover = {
 
 function Chart({ homeValuationData }) {
   const canvasRef = useRef(null);
+  const chartRef = useRef(null);
   const [estimate, setEstimate] = useState('Not enough data yet.');
+  const [selectedHomeValuationData, setSelectedHomeValuationData] = useState([
+    ...homeValuationData
+  ]);
 
   // create chart and update estimate
   useEffect(() => {
     // update estimate
-    // TODO: business logic--> if estimate is negative, still show this info? Same color?
+    // TODO: if estimate is negative, still show this info? If so, same color?
     if (homeValuationData.length >= 2) {
       const last2Months = homeValuationData.slice(-2);
       const currentMonth = last2Months[1].valuation;
@@ -40,16 +44,19 @@ function Chart({ homeValuationData }) {
     }
 
     // create chart TODO: what is minimum data length needed to render chart and still look good?
-    if (homeValuationData.length) {
+    if (selectedHomeValuationData.length) {
       const ctx = canvasRef.current.getContext('2d');
-      new ChartJS(ctx, {
+      const config = {
         type: 'line',
         data: {
-          labels: homeValuationData.map(obj => obj.month).concat(['']),
+          labels:
+            selectedHomeValuationData.length >= 6
+              ? selectedHomeValuationData.map(obj => obj.month).concat(['']) // need extra space
+              : selectedHomeValuationData.map(obj => obj.month),
           datasets: [
             // top dashed line
             {
-              data: homeValuationData.map(obj => obj.valuationHigh),
+              data: selectedHomeValuationData.map(obj => obj.valuationHigh),
               backgroundColor: 'rgb(243, 249, 251)',
               fill: '+1',
               lineTension: 0,
@@ -62,7 +69,7 @@ function Chart({ homeValuationData }) {
             },
             // solid line
             {
-              data: homeValuationData.map(obj => obj.valuation),
+              data: selectedHomeValuationData.map(obj => obj.valuation),
               fill: false,
               lineTension: 0,
               borderColor: 'rgb(0, 133, 167)',
@@ -79,7 +86,7 @@ function Chart({ homeValuationData }) {
             },
             // bottom dashed line
             {
-              data: homeValuationData.map(obj => obj.valuationLow),
+              data: selectedHomeValuationData.map(obj => obj.valuationLow),
               backgroundColor: 'rgb(243, 249, 251)',
               fill: '-1',
               borderColor: 'rgb(0, 133, 167)',
@@ -126,12 +133,14 @@ function Chart({ homeValuationData }) {
               {
                 position: 'right',
                 gridLines: {
+                  lineWidth: 2,
+                  color: 'rgb(235,235,235)',
                   drawBorder: false,
                   drawTicks: false,
                   zeroLineColor: 'rgba(0, 0, 0, 0.1)'
                 },
                 ticks: {
-                  suggestedMin: homeValuationData[0].valuation / 3,
+                  suggestedMin: selectedHomeValuationData[0].valuation / 3,
                   maxTicksLimit: 5,
                   mirror: true,
                   labelOffset: -10,
@@ -196,7 +205,7 @@ function Chart({ homeValuationData }) {
               // Set Text
               if (tooltipModel.body) {
                 const target =
-                  homeValuationData[tooltipModel.dataPoints[0].index];
+                  selectedHomeValuationData[tooltipModel.dataPoints[0].index];
 
                 let innerHtml = `
                   <p class='font-bold text-base text-center mb-3'>${formatValuation(
@@ -249,10 +258,22 @@ function Chart({ homeValuationData }) {
             }
           }
         }
-      });
-    }
-  }, [homeValuationData]);
+      };
 
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = new ChartJS(ctx, config);
+      } else {
+        chartRef.current = new ChartJS(ctx, config);
+      }
+    }
+  }, [selectedHomeValuationData]);
+
+  /**
+   * Range buttons click event handler
+   *
+   * @param event Synthetic event object
+   */
   const handleRangeButtonClick = ({ target }) => {
     if (target.classList.contains('range-button__active')) return;
 
@@ -260,6 +281,19 @@ function Chart({ homeValuationData }) {
       child.classList.remove('range-button__active')
     );
     target.classList.add('range-button__active');
+
+    let range = parseInt(target.dataset.range, 10);
+    let selectedHomeValuationData;
+
+    // hard coded here and in markup
+    if (range === 12) {
+      selectedHomeValuationData = homeValuationData;
+    } else if (range === 6) {
+      selectedHomeValuationData = homeValuationData.slice(-6);
+    }
+
+    setSelectedHomeValuationData(selectedHomeValuationData);
+    target.blur();
   };
 
   return (
@@ -303,24 +337,28 @@ function Chart({ homeValuationData }) {
         </div>
 
         {/* buttons */}
-        <div onClick={handleRangeButtonClick}>
-          {/* 6M */}
-          <button
-            type='button'
-            name='6M'
-            className='px-2 py-1 rounded w-12 range-button'
-          >
-            6M
-          </button>
-          {/* 12M */}
-          <button
-            type='button'
-            name='12M'
-            className='px-2 py-1 rounded w-12 range-button range-button__active'
-          >
-            12M
-          </button>
-        </div>
+        {homeValuationData.length === 12 && (
+          <div onClick={handleRangeButtonClick}>
+            {/* 6M */}
+            <button
+              type='button'
+              data-range={6}
+              className='px-2 py-1 rounded w-12 range-button'
+            >
+              6M
+            </button>
+
+            {/* 12M */}
+
+            <button
+              type='button'
+              data-range={12}
+              className='px-2 py-1 rounded w-12 range-button range-button__active'
+            >
+              12M
+            </button>
+          </div>
+        )}
       </div>
 
       {/* responsive ChartJS container */}

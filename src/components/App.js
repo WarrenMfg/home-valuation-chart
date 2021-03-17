@@ -13,11 +13,14 @@ function App() {
       try {
         const response = await fetch('/api/home-valuation-data');
         const { data } = await handleErrors(response);
-        setHomeValuationData(data);
+        setHomeValuationData(data.slice(-12)); // unsure of how much data we would get back
       } catch (error) {
         console.error(error);
+        // decide what to render in this case
       }
     };
+
+    // simulate network delay
     setTimeout(fetchHomeValuationData, 1000);
   }, []);
   return (

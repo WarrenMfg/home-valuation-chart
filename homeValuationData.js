@@ -2,7 +2,7 @@ const faker = require('faker');
 
 const valuations = new Array(12)
   .fill(null)
-  .map(() => faker.random.number({ min: 450000, max: 600000 })); // { min: 450000, max: 600000 } { min: 1900000, max: 2250000 }
+  .map(() => faker.random.number({ min: 450000, max: 500000 })); // { min: 450000, max: 500000 } { min: 1900000, max: 1950000 }
 const valuationDiff = 40000;
 const months = [
   'Jan 2021',
