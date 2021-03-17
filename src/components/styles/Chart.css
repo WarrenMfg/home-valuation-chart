@@ -7,3 +7,20 @@
 .estimate {
   color: var(--green);
 }
+
+.range-button {
+  background-color: white;
+  color: var(--black);
+  transition: all 0.2s ease;
+}
+
+.range-button:hover:not(.range-button__active) {
+  background-color: var(--blue__dimmed);
+}
+
+.range-button__active {
+  position: relative;
+  background-color: var(--blue);
+  color: white;
+  z-index: 1;
+}

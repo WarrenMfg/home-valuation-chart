@@ -20,7 +20,6 @@ function Chart({ homeValuationData }) {
   const canvasRef = useRef(null);
   const [estimate, setEstimate] = useState('Not enough data yet.');
 
-  // TODO: move this to custom hook
   // create chart and update estimate
   useEffect(() => {
     // update estimate
@@ -51,10 +50,10 @@ function Chart({ homeValuationData }) {
             // top dashed line
             {
               data: homeValuationData.map(obj => obj.valuationHigh),
-              backgroundColor: 'rgba(63, 131, 165, 0.075)',
+              backgroundColor: 'rgb(243, 249, 251)',
               fill: '+1',
               lineTension: 0,
-              borderColor: 'rgba(63, 131, 165, 1)',
+              borderColor: 'rgb(0, 133, 167)',
               borderWidth: 1,
               borderDash: [1, 3],
               pointHoverRadius: 0,
@@ -66,7 +65,7 @@ function Chart({ homeValuationData }) {
               data: homeValuationData.map(obj => obj.valuation),
               fill: false,
               lineTension: 0,
-              borderColor: 'rgba(63, 131, 165, 1)',
+              borderColor: 'rgb(0, 133, 167)',
               borderWidth: 2,
               borderCapStyle: 'round',
               pointRadius: 7,
@@ -75,15 +74,15 @@ function Chart({ homeValuationData }) {
               pointBorderColor: 'rgba(255, 255, 255, 0)',
               pointHoverRadius: 7,
               pointHoverBackgroundColor: 'rgba(255, 255, 255, 1)',
-              pointHoverBorderColor: 'rgba(63, 131, 165, 1)',
+              pointHoverBorderColor: 'rgb(0, 133, 167)',
               pointHoverBorderWidth: 2
             },
             // bottom dashed line
             {
               data: homeValuationData.map(obj => obj.valuationLow),
-              backgroundColor: 'rgba(63, 131, 165, 0.075)',
+              backgroundColor: 'rgb(243, 249, 251)',
               fill: '-1',
-              borderColor: 'rgba(63, 131, 165, 1)',
+              borderColor: 'rgb(0, 133, 167)',
               lineTension: 0,
               borderWidth: 1,
               borderDash: [1, 3],
@@ -99,8 +98,7 @@ function Chart({ homeValuationData }) {
           },
           layout: {
             padding: {
-              top: 20,
-              right: 15
+              top: 20
             }
           },
           scales: {
@@ -255,18 +253,77 @@ function Chart({ homeValuationData }) {
     }
   }, [homeValuationData]);
 
+  const handleRangeButtonClick = ({ target }) => {
+    if (target.classList.contains('range-button__active')) return;
+
+    [...target.parentElement.children].forEach(child =>
+      child.classList.remove('range-button__active')
+    );
+    target.classList.add('range-button__active');
+  };
+
   return (
-    <div>
+    <section>
       <header className='flex items-center mb-4'>
         <div className='flex justify-center items-center mr-4 rounded-full w-14 h-14 header-icon'>
           <i className='fas fa-history text-xl'></i>
         </div>
         <h1 className='text-lg font-bold'>History</h1>
       </header>
-      <p className='mb-4'>
+      <p className='mb-5'>
         Your home value estimate in the last 30 days:{' '}
         <span className='estimate font-bold'>{estimate}</span>
       </p>
+
+      {/* legend and buttons */}
+      <div className='flex justify-between mb-8'>
+        {/* legend */}
+        <div className='flex'>
+          {/* average estimate */}
+          <div className='flex items-center mr-8'>
+            <div
+              className='w-8 h-0.5 mr-4'
+              style={{ backgroundColor: 'rgb(0, 133, 167)' }}
+            ></div>
+            <p>Average estimate</p>
+          </div>
+
+          {/* range of estimate */}
+          <div className='flex items-center'>
+            <div
+              className='w-8 h-1/3 mr-4'
+              style={{
+                backgroundColor: 'rgb(243, 249, 251)',
+                borderTop: '1px dotted rgb(0, 133, 167)',
+                borderBottom: '1px dotted rgb(0, 133, 167)'
+              }}
+            ></div>
+            <p>Range of estimate</p>
+          </div>
+        </div>
+
+        {/* buttons */}
+        <div onClick={handleRangeButtonClick}>
+          {/* 6M */}
+          <button
+            type='button'
+            name='6M'
+            className='px-2 py-1 rounded w-12 range-button'
+          >
+            6M
+          </button>
+          {/* 12M */}
+          <button
+            type='button'
+            name='12M'
+            className='px-2 py-1 rounded w-12 range-button range-button__active'
+          >
+            12M
+          </button>
+        </div>
+      </div>
+
+      {/* responsive ChartJS container */}
       <div
         className='chart-container'
         style={{
@@ -278,7 +335,7 @@ function Chart({ homeValuationData }) {
       >
         <canvas ref={canvasRef} id='myChart'></canvas>
       </div>
-    </div>
+    </section>
   );
 }
 
