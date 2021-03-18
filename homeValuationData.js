@@ -1,9 +1,14 @@
 const faker = require('faker');
 
+const min = 2_500_000; // 150_000, 450_000, 1_900_000, 2_500_000
+const max = 2_600_000; // 200_000, 500_000, 1_950_000, 2_600_000
+
 const valuations = new Array(12)
   .fill(null)
-  .map(() => faker.random.number({ min: 2500000, max: 2600000 })); // { min: 450000, max: 500000 } { min: 1900000, max: 1950000 }
-const valuationDiff = 40000;
+  .map(() => faker.random.number({ min, max })); // { min: 450000, max: 500000 } { min: 1900000, max: 1950000 } { min: 2500000, max: 2600000 }
+
+const valuationDiff = Math.round((max - min) / 3); // estimation
+
 const months = [
   'Jan 2021',
   'Feb 2021',

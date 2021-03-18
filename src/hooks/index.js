@@ -26,8 +26,24 @@ export const useChartJS = ({
         { valuation: lastMonth = 0 },
         { valuation: currentMonth = 0 }
       ] = homeValuationData.slice(-2);
+
       const diff = currentMonth - lastMonth;
-      const percentDiff = diff ? Math.round((diff / currentMonth) * 100) : 0;
+      let percentDiff;
+
+      // calculate float percentDiff
+      if (Math.abs(diff / currentMonth) < 1) {
+        percentDiff = diff
+          ? (Math.round(Math.abs((diff / currentMonth) * 1000)) / 10) *
+            (diff >= 0 ? 1 : -1)
+          : 0;
+        // otherwise, calculate integer percentDiff
+      } else {
+        percentDiff = diff
+          ? Math.round(Math.abs((diff / currentMonth) * 100)) *
+            (diff >= 0 ? 1 : -1)
+          : 0;
+      }
+
       setEstimate(
         `${formatValuation({
           data: diff,
@@ -37,7 +53,7 @@ export const useChartJS = ({
       );
     } // TODO: if estimate is negative, still show this info? If so, same color?
 
-    // .getContext(), define config, create/destroy chart
+    // .getContext(), define chart config, create/destroy chart
     if (selectedHomeValuationData.length) {
       // consider: selectedHomeValuationData.length >= 2
       const ctx = canvasRef.current.getContext('2d');
@@ -53,6 +69,7 @@ export const useChartJS = ({
           datasets: [
             // top dashed line
             {
+              order: 2,
               data: selectedHomeValuationData.map(obj => obj.valuationHigh),
               backgroundColor: 'rgb(243, 249, 251)',
               fill: '+1',
@@ -66,6 +83,7 @@ export const useChartJS = ({
             },
             // solid line
             {
+              order: 1,
               data: selectedHomeValuationData.map(obj => obj.valuation),
               fill: false,
               lineTension: 0,
@@ -83,6 +101,7 @@ export const useChartJS = ({
             },
             // bottom dashed line
             {
+              order: 3,
               data: selectedHomeValuationData.map(obj => obj.valuationLow),
               backgroundColor: 'rgb(243, 249, 251)',
               fill: '-1',
@@ -141,7 +160,9 @@ export const useChartJS = ({
                   zeroLineColor: 'rgba(0, 0, 0, 0.1)'
                 },
                 ticks: {
-                  suggestedMin: selectedHomeValuationData[0].valuation / 3,
+                  suggestedMin:
+                    selectedHomeValuationData[0].valuation -
+                    selectedHomeValuationData[0].valuation / 2,
                   maxTicksLimit: 5,
                   mirror: true,
                   labelOffset: -10,
