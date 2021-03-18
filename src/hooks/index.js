@@ -20,18 +20,19 @@ export const useChartJS = ({
 }) => {
   // create/destroy chart on selectedHomeValuationData changes
   useEffect(() => {
-    // update estimate
+    // update estimate, if enough data to calculate
     if (homeValuationData.length >= 2) {
-      const last2Months = homeValuationData.slice(-2);
-      const currentMonth = last2Months[1].valuation;
-      const lastMonth = last2Months[0].valuation;
+      const [
+        { valuation: lastMonth = 0 },
+        { valuation: currentMonth = 0 }
+      ] = homeValuationData.slice(-2);
       const diff = currentMonth - lastMonth;
-      const percentDiff = Math.round((diff / currentMonth) * 100);
+      const percentDiff = diff ? Math.round((diff / currentMonth) * 100) : 0;
       setEstimate(
         `${formatValuation({
           data: diff,
           withSign: true,
-          roundToNearestThousand: false
+          roundToNearestThousand: true
         })} (${percentDiff}%)`
       );
     } // TODO: if estimate is negative, still show this info? If so, same color?

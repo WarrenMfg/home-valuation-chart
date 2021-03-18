@@ -13,12 +13,12 @@ export const formatValuation = ({ data, withSign, roundToNearestThousand }) => {
     sign = data < 0 ? '' : '+'; // browser compatibility hack: .toLocaleString() will add negative sign
   }
 
+  // ensure negative data rounds in the negative direction (e.g. -3500 --> -4000)
   let rounded;
-
   if (roundToNearestThousand) {
-    rounded = Math.round(data / 1000) * 1000;
+    rounded = Math.round(Math.abs(data / 1000)) * 1000 * (data >= 0 ? 1 : -1);
   } else {
-    rounded = Math.round(data); // NOTE: -1000.5 rounds to -1000
+    rounded = Math.round(Math.abs(data)) * (data >= 0 ? 1 : -1);
   }
 
   return (
