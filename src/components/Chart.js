@@ -86,7 +86,7 @@ function Chart({ homeValuationData }) {
             {/* line container */}
             <div className='flex items-center mr-4 line-container'>
               <div className='rounded-full w-1.5 h-1.5'></div>
-              <div className='w-5 h-0.5'></div>
+              <div className='w-8 h-0.5'></div>
               <div className='rounded-full w-1.5 h-1.5'></div>
             </div>
             <p>Average estimate</p>
