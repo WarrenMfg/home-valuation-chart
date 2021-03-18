@@ -49,13 +49,12 @@ function Chart({ homeValuationData }) {
     // make target the active button
     target.classList.add('range-button__active');
 
-    let range = parseInt(target.dataset.range, 10);
     let selectedHomeValuationData;
 
     // hard coded here and in markup
-    if (range === 12) {
+    if (target.dataset.range == 12) {
       selectedHomeValuationData = homeValuationData;
-    } else if (range === 6) {
+    } else if (target.dataset.range == 6) {
       selectedHomeValuationData = homeValuationData.slice(-6);
     }
 

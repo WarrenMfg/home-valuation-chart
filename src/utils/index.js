@@ -1,3 +1,8 @@
+/**
+ * Handles fetch API errors
+ *
+ * @param res The response from the fetch request
+ */
 export const handleErrors = async res => {
   if (!res.ok) {
     throw await res.json();
@@ -6,6 +11,13 @@ export const handleErrors = async res => {
   }
 };
 
+/**
+ * Formats numbers into currency
+ *
+ * @param data The number to format
+ * @param withSign Boolean to indicate if sign (+/-) is desired
+ * @param roundToNearestThousand Boolean to indicate if rounding is desired
+ */
 export const formatValuation = ({ data, withSign, roundToNearestThousand }) => {
   let sign = '';
 
