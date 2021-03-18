@@ -4,6 +4,10 @@
   background-color: var(--blue__dimmed);
 }
 
+.line-container > div {
+  background-color: var(--blue);
+}
+
 .estimate {
   color: var(--green);
 }
