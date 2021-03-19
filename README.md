@@ -2,7 +2,7 @@
 
 Custom chart with [Chart.js](https://www.chartjs.org/).
 
-Screenshots consist of two version: 1) without visible data points, and 2) with visible data points.
+Screenshots consist of two versions: 1) without visible data points, and 2) with visible data points.
 
 Both versions demonstrate 12 months of data, 6 months of data, and a custom tooltip showing the "Average estimate" and "Range of estimate" for that data point.
 
