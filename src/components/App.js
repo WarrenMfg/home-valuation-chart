@@ -10,7 +10,7 @@ import { handleErrors } from '../utils';
  */
 function App() {
   // track home valuation data
-  const [homeValuationData, setHomeValuationData] = useState([]);
+  const [homeValuationData, setHomeValuationData] = useState(null);
 
   // fetch home valuation data on mount
   useEffect(() => {
@@ -22,7 +22,7 @@ function App() {
         setHomeValuationData(data.slice(-12));
       } catch (error) {
         // what to render in this case? no component?
-        setHomeValuationData([null]);
+        setHomeValuationData(error);
       }
     };
 
@@ -32,9 +32,12 @@ function App() {
 
   return (
     <div className='container mx-auto py-8 flex flex-col items-center min-h-screen'>
-      {homeValuationData.length === 0 ? (
+      {/* use homeValuationData as basis for rendering: */}
+      {/* if null, show loader; if error or not adequate length, return null; otherwise, return Chart */}
+      {homeValuationData === null ? (
         <Loader />
-      ) : homeValuationData[0] === null ? null : (
+      ) : homeValuationData instanceof Error ||
+        homeValuationData.length < 2 ? null : (
         <Chart homeValuationData={homeValuationData} />
       )}
     </div>
