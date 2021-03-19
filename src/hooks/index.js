@@ -3,7 +3,9 @@ import ChartJS from 'chart.js';
 
 import { formatValuation } from '../utils';
 
-// remove janky animation on hover
+// remove janky animation on hover:
+// when mouseout and mousein animation events overlap,
+// it causes weird, alternating animations
 ChartJS.defaults.global.hover = {
   mode: 'nearest',
   intersect: true,
@@ -11,51 +13,22 @@ ChartJS.defaults.global.hover = {
   animationDuration: 0
 };
 
+/**
+ * Renders chart
+ *
+ * @param obj.canvasRef Ref for canvas to .getContext()
+ * @param obj.chartRef Ref for creating/destroying charts
+ * @param obj.selectedHomeValuationData The user's selected chart view
+ */
 export const useChartJS = ({
-  homeValuationData,
   canvasRef,
   chartRef,
-  setEstimate,
   selectedHomeValuationData
 }) => {
   // create/destroy chart on selectedHomeValuationData changes
   useEffect(() => {
-    // update estimate, if enough data to calculate
-    if (homeValuationData.length >= 2) {
-      const [
-        { valuation: lastMonth = 0 },
-        { valuation: currentMonth = 0 }
-      ] = homeValuationData.slice(-2);
-
-      const diff = currentMonth - lastMonth;
-      let percentDiff;
-
-      // calculate float percentDiff
-      if (Math.abs(diff / currentMonth) < 1) {
-        percentDiff = diff
-          ? (Math.round(Math.abs((diff / currentMonth) * 1000)) / 10) *
-            (diff >= 0 ? 1 : -1)
-          : 0;
-        // otherwise, calculate integer percentDiff
-      } else {
-        percentDiff = diff
-          ? Math.round(Math.abs((diff / currentMonth) * 100)) *
-            (diff >= 0 ? 1 : -1)
-          : 0;
-      }
-
-      setEstimate(
-        `${formatValuation({
-          data: diff,
-          withSign: true,
-          roundToNearestThousand: true
-        })} (${percentDiff}%)`
-      );
-    } // TODO: if estimate is negative, still show this info? If so, same color?
-
     // .getContext(), define chart config, create/destroy chart
-    if (selectedHomeValuationData.length) {
-      // consider: selectedHomeValuationData.length >= 2
+    if (selectedHomeValuationData.length >= 2) {
       const ctx = canvasRef.current.getContext('2d');
       const config = {
         type: 'line',
@@ -307,6 +280,6 @@ export const useChartJS = ({
       } else {
         chartRef.current = new ChartJS(ctx, config);
       }
-    } // TODO: what is minimum data length needed to render chart and still look good? 2?
+    }
   }, [selectedHomeValuationData]);
 };

@@ -18,10 +18,11 @@ function App() {
       try {
         const response = await fetch('/api/home-valuation-data');
         const { data } = await handleErrors(response);
-        setHomeValuationData(data.slice(-12)); // unsure of how much data we would actually get back
+        // unsure of how much data we would actually get back
+        setHomeValuationData(data.slice(-12));
       } catch (error) {
-        console.error(error);
-        // what to render in this case?
+        // what to render in this case? no component?
+        setHomeValuationData([null]);
       }
     };
 
@@ -33,7 +34,7 @@ function App() {
     <div className='container mx-auto py-8 flex flex-col items-center min-h-screen'>
       {homeValuationData.length === 0 ? (
         <Loader />
-      ) : (
+      ) : homeValuationData[0] === null ? null : (
         <Chart homeValuationData={homeValuationData} />
       )}
     </div>

@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+import { formatValuation } from '../utils';
 import { useChartJS } from '../hooks';
 
 import './styles/Chart.css';
@@ -19,22 +20,58 @@ function Chart({ homeValuationData }) {
   const chartRef = useRef(null);
   // track last 30 days home value estimate
   const [estimate, setEstimate] = useState('Not enough data yet.');
-  // track the home valuation data that the user has selected
+  // track the home valuation data that the user has selected; default to incoming data
   const [selectedHomeValuationData, setSelectedHomeValuationData] = useState([
     ...homeValuationData
   ]);
 
-  // custom hook to create/destroy chart
+  // calculate home valuation estimate in last 30 days
+  useEffect(() => {
+    // if enough data to calculate
+    if (homeValuationData.length >= 2) {
+      // destructure lastMonth and currentMonth
+      const [
+        { valuation: lastMonth = 0 },
+        { valuation: currentMonth = 0 }
+      ] = homeValuationData.slice(-2);
+
+      // calculate difference
+      const diff = currentMonth - lastMonth;
+      let percentDiff;
+
+      // if percent change is < 1%, calculate float percentDiff
+      if (Math.abs(diff / currentMonth) < 0.01) {
+        percentDiff = diff
+          ? (Math.round(Math.abs((diff / currentMonth) * 1000)) / 10) *
+            (diff >= 0 ? 1 : -1)
+          : 0;
+        // otherwise, calculate rounded integer percentDiff
+      } else {
+        percentDiff = diff
+          ? Math.round(Math.abs((diff / currentMonth) * 100)) *
+            (diff >= 0 ? 1 : -1)
+          : 0;
+      }
+
+      setEstimate(
+        `${formatValuation({
+          data: diff,
+          withSign: true,
+          roundToNearestThousand: true
+        })} (${percentDiff}%)`
+      );
+    } // TODO: if estimate is negative, still show this info? If so, same color?
+  }, [homeValuationData]);
+
+  // custom effect hook to create/destroy chart
   useChartJS({
-    homeValuationData,
     canvasRef,
     chartRef,
-    setEstimate,
     selectedHomeValuationData
   });
 
   /**
-   * Range buttons click event handler
+   * Range buttons delegated click event handler
    *
    * @param event Synthetic event object
    */
@@ -86,7 +123,7 @@ function Chart({ homeValuationData }) {
             {/* line container */}
             <div className='flex items-center mr-4 line-container'>
               <div className='rounded-full w-1.5 h-1.5'></div>
-              <div className='w-8 h-0.5'></div>
+              <div className='w-6 h-0.5'></div>
               <div className='rounded-full w-1.5 h-1.5'></div>
             </div>
             <p>Average estimate</p>
@@ -106,7 +143,7 @@ function Chart({ homeValuationData }) {
           </div>
         </div>
 
-        {/* buttons */}
+        {/* buttons (only shown if enough data) */}
         {homeValuationData.length === 12 && (
           <div onClick={handleRangeButtonClick}>
             {/* 6M */}
@@ -119,7 +156,6 @@ function Chart({ homeValuationData }) {
             </button>
 
             {/* 12M */}
-
             <button
               type='button'
               data-range={12}
