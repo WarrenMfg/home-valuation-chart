@@ -5,7 +5,7 @@ const max = 500_000; // 200_000, 500_000, 1_950_000, 2_600_000
 
 const valuations = new Array(12)
   .fill(null)
-  .map(() => faker.random.number({ min, max })); // { min: 450000, max: 500000 } { min: 1900000, max: 1950000 } { min: 2500000, max: 2600000 }
+  .map(() => faker.random.number({ min, max }));
 
 const valuationDiff = Math.round((max - min) / 3); // estimation
 
